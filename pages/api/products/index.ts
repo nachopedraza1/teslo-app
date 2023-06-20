@@ -18,8 +18,21 @@ export default function (req: NextApiRequest, res: NextApiResponse<Data>) {
 }
 
 const getProducts = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+
+    const { gender = 'all' } = req.query;
+
+    let condition = {}
+
+    if (gender !== 'all' && ['men', 'women', 'kid', 'unisex'].includes(`${gender}`)) {
+        condition = { gender }
+    }
+
+
     await db.connect();
-    const Products = await Product.find().select('title images price inStock slug -_id').lean();
+    const Products = await Product
+        .find(condition)
+        .select('title images price inStock slug -_id')
+        .lean();
     await db.disconnect();
 
     res.status(200).json(Products);
