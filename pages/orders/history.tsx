@@ -1,9 +1,9 @@
 import NextLink from 'next/link';
 
-import { Typography, Grid, Chip, Link } from '@mui/material';
+import { Typography, Grid, Chip } from '@mui/material';
 import { DataGrid, GridColDef, GridRenderCellParams, GridValueGetterParams } from '@mui/x-data-grid';
 
-import { ShopLayout } from '../../components/layouts';
+import { ShopLayout } from '@/components/layouts';
 
 
 

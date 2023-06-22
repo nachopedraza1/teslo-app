@@ -3,8 +3,8 @@ import NextLink from 'next/link';
 import { Link, Box, Card, CardContent, Divider, Grid, Typography, Chip } from '@mui/material';
 import { CreditCardOffOutlined, CreditScoreOutlined } from '@mui/icons-material';
 
-import { ShopLayout } from '../../components/layouts/ShopLayout';
-import { CartList, OrderSummary } from '../../components/cart';
+import { ShopLayout } from '@/components/layouts/ShopLayout';
+import { CartList, OrderSummary } from '@/components/cart';
 
 
 const OrderPage = () => {

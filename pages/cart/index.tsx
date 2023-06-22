@@ -1,7 +1,7 @@
 import { Box, Button, Card, CardContent, Divider, Grid, Typography } from '@mui/material';
 
-import { ShopLayout } from '../../components/layouts/ShopLayout';
-import { CartList, OrderSummary } from '../../components/cart';
+import { ShopLayout } from '@/components/layouts/ShopLayout';
+import { CartList, OrderSummary } from '@/components/cart';
 
 const CartPage = () => {
   return (

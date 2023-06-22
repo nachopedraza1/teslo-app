@@ -1,6 +1,5 @@
 import { IProduct } from "@/interfaces";
 import mongoose, { Schema, Model } from "mongoose";
-import { text } from "stream/consumers";
 
 
 const productSchema = new Schema({
