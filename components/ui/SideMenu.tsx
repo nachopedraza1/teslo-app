@@ -1,5 +1,4 @@
 import { useContext, useState } from "react"
-import NextLink from 'next/link';
 import { useRouter } from "next/router";
 
 import { UiContext } from "@/context";
@@ -39,6 +38,7 @@ export const SideMenu = () => {
 
                     <ListItem>
                         <Input
+                            autoFocus
                             type='text'
                             placeholder="Buscar..."
                             value={searchTermn}

@@ -9,7 +9,7 @@ export const getProdutBySlug = async (slug: string): Promise<IProduct | null> =>
     await db.disconnect();
 
     if (!product) {
-        return null
+        return null;
     }
 
     return JSON.parse(JSON.stringify(product));
@@ -25,5 +25,27 @@ export const getAllProductSlugs = async (): Promise<ProductSlug[]> => {
     const slugs = await Product.find().select('slug -_id').lean();
     await db.disconnect();
 
-    return slugs
+    return slugs;
+}
+
+export const getProductByTerm = async (query: string): Promise<IProduct[]> => {
+
+    query = query.toString().toLowerCase();
+
+    await db.connect();
+
+    const products = Product.find({ $text: { $search: query } }).select('title images price inStock slug -_id').lean();
+
+    await db.disconnect();
+
+    return products;
+}
+
+export const getAllProducts = async (): Promise<IProduct[]> => {
+
+    await db.connect();
+    const products = await Product.find().select('title images price inStock slug -_id').lean();
+    await db.disconnect();
+
+    return products;
 }
