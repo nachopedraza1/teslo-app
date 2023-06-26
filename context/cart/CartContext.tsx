@@ -3,6 +3,7 @@ import { ICartProduct } from '@/interfaces/cart';
 
 interface ContextProps {
     cart: ICartProduct[];
+    onAddProductToCart: (product: ICartProduct) => void
 }
 
 

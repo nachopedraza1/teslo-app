@@ -16,9 +16,21 @@ export const CartProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const [state, dispatch] = useReducer(cartReducer, Cart_INITIAL_STATE);
 
+    const onAddProductToCart = (productInCart: ICartProduct) => {
+
+        let productExist = state.cart.find(product => product._id === productInCart._id)
+        if (productExist) {
+            productExist = { ...productExist, quantity: productExist.quantity + productInCart.quantity }
+            console.log(productExist);
+        }
+
+        dispatch({ type: '[Cart] - Add product', payload: productInCart })
+    }
+
     return (
         <CartContext.Provider value={{
-            ...state
+            ...state,
+            onAddProductToCart
         }}>
             {children}
         </CartContext.Provider>

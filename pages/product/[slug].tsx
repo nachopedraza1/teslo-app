@@ -1,3 +1,4 @@
+import { useContext, useState } from 'react';
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
 
 import { ShopLayout } from '@/components/layouts';
@@ -5,8 +6,10 @@ import { ProductSlideshow, SizeSelector } from '@/components/products';
 import { ItemCounter } from '@/components/ui/ItemCounter';
 
 import { Box, Button, Chip, Grid, Typography } from '@mui/material';
-import { IProduct } from '@/interfaces/products';
+import { IProduct, ISize } from '@/interfaces/products';
 import { dbProduct } from '@/database';
+import { ICartProduct } from '@/interfaces/cart';
+import { CartContext } from '@/context';
 
 
 interface Props {
@@ -15,6 +18,33 @@ interface Props {
 
 const ProductPage: NextPage<Props> = ({ product }) => {
 
+  const { onAddProductToCart, cart } = useContext(CartContext);
+  console.log(cart);
+
+
+  const [tempCartProduct, setTempCartProduct] = useState<ICartProduct>({
+    _id: product._id,
+    images: product.images[0],
+    price: product.price,
+    size: undefined,
+    slug: product.slug,
+    title: product.title,
+    gender: product.gender,
+    quantity: 1,
+  });
+
+  const onSelectedSize = (size: ISize) => {
+    setTempCartProduct({ ...tempCartProduct, size })
+  }
+
+  const onUpdateProduct = (quantity: number) => {
+    setTempCartProduct({ ...tempCartProduct, quantity })
+  }
+
+  const onAddProduct = () => {
+    if (!tempCartProduct.size) return;
+    onAddProductToCart(tempCartProduct);
+  }
 
   return (
     <ShopLayout title={product.title} pageDescription={product.description}>
@@ -37,10 +67,15 @@ const ProductPage: NextPage<Props> = ({ product }) => {
             {/* Cantidad */}
             <Box sx={{ my: 2 }}>
               <Typography variant='subtitle2'>Cantidad</Typography>
-              <ItemCounter />
+              <ItemCounter
+                maxValue={product.inStock}
+                onUpdateProduct={onUpdateProduct}
+                currentValue={tempCartProduct.quantity}
+              />
               <SizeSelector
-                // selectedSize={ product.sizes[2] } 
+                selectedSize={tempCartProduct.size}
                 sizes={product.sizes}
+                onSelectedSize={onSelectedSize}
               />
             </Box>
 
@@ -50,8 +85,12 @@ const ProductPage: NextPage<Props> = ({ product }) => {
               product.inStock > 0
                 ?
                 (
-                  <Button color="secondary" className='circular-btn'>
-                    Agregar al carrito
+                  <Button color="secondary" className='circular-btn' onClick={onAddProduct} >
+                    {
+                      tempCartProduct.size
+                        ? 'Agregar al carrito'
+                        : 'Seleccione una talla'
+                    }
                   </Button>
                 ) : (
                   <Chip label="No hay disponibles" color="error" variant='outlined' />
