@@ -18,13 +18,18 @@ export const CartProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const onAddProductToCart = (productInCart: ICartProduct) => {
 
-        let productExist = state.cart.find(product => product._id === productInCart._id)
-        if (productExist) {
-            productExist = { ...productExist, quantity: productExist.quantity + productInCart.quantity }
-            console.log(productExist);
+        let productExist = state.cart.find(product => product._id === productInCart._id && product.size === productInCart.size);
+        if (!productExist) {
+            return dispatch({ type: '[Cart] - Add product', payload: [...state.cart, productInCart] })
         }
 
-        dispatch({ type: '[Cart] - Add product', payload: productInCart })
+        const updatedProducts = state.cart.map(p => {
+            if (p._id !== productInCart._id && p.size !== productInCart.size) return p;
+            p.quantity += productInCart.quantity;
+            return p;
+        })
+
+        dispatch({ type: '[Cart] - Add product', payload: updatedProducts })
     }
 
     return (
