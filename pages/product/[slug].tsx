@@ -1,15 +1,17 @@
 import { useContext, useState } from 'react';
 import { GetStaticPaths, GetStaticProps, NextPage } from 'next';
+import { useRouter } from 'next/router';
 
-import { ShopLayout } from '@/components/layouts';
-import { ProductSlideshow, SizeSelector } from '@/components/products';
-import { ItemCounter } from '@/components/ui/ItemCounter';
-
-import { Box, Button, Chip, Grid, Typography } from '@mui/material';
-import { IProduct, ISize } from '@/interfaces/products';
-import { dbProduct } from '@/database';
-import { ICartProduct } from '@/interfaces/cart';
 import { CartContext } from '@/context';
+import { dbProduct } from '@/database';
+
+import { ProductSlideshow, SizeSelector } from '@/components/products';
+import { Box, Button, Chip, Grid, Typography } from '@mui/material';
+import { ItemCounter } from '@/components/ui/ItemCounter';
+import { ShopLayout } from '@/components/layouts';
+
+import { IProduct, ISize } from '@/interfaces/products';
+import { ICartProduct } from '@/interfaces/cart';
 
 
 interface Props {
@@ -18,8 +20,9 @@ interface Props {
 
 const ProductPage: NextPage<Props> = ({ product }) => {
 
-  const { onAddProductToCart, cart } = useContext(CartContext);
-  console.log(cart);
+  const router = useRouter();
+
+  const { onAddProductToCart } = useContext(CartContext);
 
 
   const [tempCartProduct, setTempCartProduct] = useState<ICartProduct>({
@@ -44,6 +47,7 @@ const ProductPage: NextPage<Props> = ({ product }) => {
   const onAddProduct = () => {
     if (!tempCartProduct.size) return;
     onAddProductToCart(tempCartProduct);
+    router.push('/cart');
   }
 
   return (

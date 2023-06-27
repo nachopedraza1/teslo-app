@@ -1,6 +1,7 @@
-import { FC, ReactNode, useReducer } from 'react';
+import { FC, ReactNode, useEffect, useReducer } from 'react';
 import { CartContext, cartReducer } from './';
 import { ICartProduct } from '@/interfaces/cart';
+import Cookie from 'js-cookie';
 
 export interface CartState {
     cart: ICartProduct[];
@@ -16,26 +17,59 @@ export const CartProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const [state, dispatch] = useReducer(cartReducer, Cart_INITIAL_STATE);
 
+    useEffect(() => {
+        try {
+            const cookieProducts = Cookie.get('cart') ? JSON.parse(Cookie.get('cart')!) : []
+            dispatch({ type: '[Cart] - LoadCart from cookies', payload: cookieProducts })
+        } catch (error) {
+            dispatch({ type: '[Cart] - LoadCart from cookies', payload: [] })
+        }
+    }, [])
+
+    useEffect(() => {
+        Cookie.set('cart', JSON.stringify(state.cart))
+    }, [state.cart])
+
+
     const onAddProductToCart = (productInCart: ICartProduct) => {
 
-        let productExist = state.cart.find(product => product._id === productInCart._id && product.size === productInCart.size);
+        const productExist = state.cart.some(prod => prod._id === productInCart._id && prod.size === productInCart.size);
+
         if (!productExist) {
-            return dispatch({ type: '[Cart] - Add product', payload: [...state.cart, productInCart] })
+            return dispatch({ type: '[Cart] - Update product', payload: [...state.cart, productInCart] });
         }
 
-        const updatedProducts = state.cart.map(p => {
-            if (p._id !== productInCart._id && p.size !== productInCart.size) return p;
-            p.quantity += productInCart.quantity;
-            return p;
+        const products = state.cart.map(prod => {
+            if (prod._id !== productInCart._id) return prod;
+            if (prod.size !== productInCart.size) return prod;
+            prod.quantity += productInCart.quantity
+            return prod;
         })
 
-        dispatch({ type: '[Cart] - Add product', payload: updatedProducts })
+        dispatch({ type: '[Cart] - Update product', payload: products })
+
+    }
+
+    const onUpdateQuantityCart = (product: ICartProduct) => {
+        const cartProducts = state.cart.map(prod => {
+            if (prod._id !== product._id) return prod;
+            if (prod.size !== product.size) return prod;
+            prod.quantity = product.quantity;
+            return prod;
+        })
+        dispatch({ type: '[Cart] - Update Quantity product', payload: cartProducts });
+    }
+
+    const removeCartProduct = (product: ICartProduct) => {
+        dispatch({ type: '[Cart] - Remove product', payload: product })
     }
 
     return (
         <CartContext.Provider value={{
             ...state,
-            onAddProductToCart
+            onAddProductToCart,
+            onUpdateQuantityCart,
+            removeCartProduct,
         }}>
             {children}
         </CartContext.Provider>

@@ -3,7 +3,9 @@ import { ICartProduct } from '@/interfaces/cart';
 
 interface ContextProps {
     cart: ICartProduct[];
-    onAddProductToCart: (product: ICartProduct) => void
+    onAddProductToCart: (product: ICartProduct) => void;
+    onUpdateQuantityCart: (product: ICartProduct) => void;
+    removeCartProduct: (product: ICartProduct) => void;
 }
 
 
