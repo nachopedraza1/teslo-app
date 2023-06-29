@@ -1,15 +1,23 @@
-import { FC, ReactNode, useEffect, useReducer } from 'react';
+import { FC, ReactNode, useEffect, useReducer, useRef } from 'react';
 import { CartContext, cartReducer } from './';
 import { ICartProduct } from '@/interfaces/cart';
 import Cookie from 'js-cookie';
 
 export interface CartState {
     cart: ICartProduct[];
+    numberOfItems: number;
+    subTotal: number;
+    iva: number;
+    total: number;
 }
 
 
 const Cart_INITIAL_STATE: CartState = {
     cart: [],
+    numberOfItems: 0,
+    subTotal: 0,
+    iva: 0,
+    total: 0,
 }
 
 
@@ -17,36 +25,50 @@ export const CartProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
     const [state, dispatch] = useReducer(cartReducer, Cart_INITIAL_STATE);
 
-    useEffect(() => {
+
+    let firstTimeLoad = useRef(true);
+
+    const loadCookies = async () => {
         try {
-            const cookieProducts = Cookie.get('cart') ? JSON.parse(Cookie.get('cart')!) : []
-            dispatch({ type: '[Cart] - LoadCart from cookies', payload: cookieProducts })
+            const productCookies = Cookie.get('cart') ? JSON.parse(Cookie.get('cart')!) : []
+            await dispatch({ type: '[Cart] - LoadCart from cookies', payload: productCookies })
         } catch (error) {
-            dispatch({ type: '[Cart] - LoadCart from cookies', payload: [] })
+            await dispatch({ type: '[Cart] - LoadCart from cookies', payload: [] })
+        } finally {
+            firstTimeLoad.current = false;
         }
-    }, [])
+    }
 
     useEffect(() => {
+        loadCookies();
+    }, [])
+
+
+    useEffect(() => {
+        if (firstTimeLoad.current) return;
         Cookie.set('cart', JSON.stringify(state.cart))
     }, [state.cart])
+
+
 
     useEffect(() => {
         const numberOfItems = state.cart.reduce((prev, current) => current.quantity + prev, 0)
         const subTotal = state.cart.reduce((prev, current) => current.price * current.quantity + prev, 0)
         const ivaRate = Number(process.env.NEXT_PUBLIC_IVA_RATE || 0);
+
         const orderSummary = {
             numberOfItems,
             subTotal,
-            iva: subTotal * ivaRate
+            iva: subTotal * ivaRate,
+            total: subTotal * (ivaRate + 1)
         }
-        console.log(orderSummary);
+        dispatch({ type: '[Cart] - Update Order summary', payload: orderSummary })
 
     }, [state.cart])
 
 
 
     const onAddProductToCart = (productInCart: ICartProduct) => {
-
         const productExist = state.cart.some(prod => prod._id === productInCart._id && prod.size === productInCart.size);
 
         if (!productExist) {
@@ -61,7 +83,6 @@ export const CartProvider: FC<{ children: ReactNode }> = ({ children }) => {
         })
 
         dispatch({ type: '[Cart] - Update product', payload: products })
-
     }
 
     const onUpdateQuantityCart = (product: ICartProduct) => {
