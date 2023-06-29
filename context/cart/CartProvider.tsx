@@ -30,6 +30,20 @@ export const CartProvider: FC<{ children: ReactNode }> = ({ children }) => {
         Cookie.set('cart', JSON.stringify(state.cart))
     }, [state.cart])
 
+    useEffect(() => {
+        const numberOfItems = state.cart.reduce((prev, current) => current.quantity + prev, 0)
+        const subTotal = state.cart.reduce((prev, current) => current.price * current.quantity + prev, 0)
+        const ivaRate = Number(process.env.NEXT_PUBLIC_IVA_RATE || 0);
+        const orderSummary = {
+            numberOfItems,
+            subTotal,
+            iva: subTotal * ivaRate
+        }
+        console.log(orderSummary);
+
+    }, [state.cart])
+
+
 
     const onAddProductToCart = (productInCart: ICartProduct) => {
 
@@ -61,7 +75,8 @@ export const CartProvider: FC<{ children: ReactNode }> = ({ children }) => {
     }
 
     const removeCartProduct = (product: ICartProduct) => {
-        dispatch({ type: '[Cart] - Remove product', payload: product })
+        const cartOnRemoveProduct = state.cart.filter(prod => !(prod._id === product._id && prod.size === product.size))
+        dispatch({ type: '[Cart] - Remove product', payload: cartOnRemoveProduct })
     }
 
     return (
