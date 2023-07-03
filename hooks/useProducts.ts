@@ -1,5 +1,5 @@
-import { IProduct } from "@/interfaces"
-import useSWR, { SWRConfiguration } from "swr"
+import useSWR, { SWRConfiguration } from "swr";
+import { IProduct } from "@/interfaces";
 
 export const useProducts = (url: string, config: SWRConfiguration = {}) => {
 
