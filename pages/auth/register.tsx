@@ -29,7 +29,7 @@ const RegisterPage = () => {
         setShowError(false)
 
         try {
-            const { data } = await tesloApi.post('/user/login', { name, email, password });
+            const { data } = await tesloApi.post('/user/register', { name, email, password });
             console.log(data);
         } catch (error) {
             console.log('error en las credenciales');
