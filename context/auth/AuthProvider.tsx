@@ -40,7 +40,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
             const { data } = await tesloApi.post('/user/register', { name, email, password });
             const { token, user } = data;
             Cookies.set('token', token);
-            dispatch({ type: '[Auth] - Login', payload: user })
+            dispatch({ type: '[Auth] - Login', payload: user });
             return {
                 hasError: false
             }
@@ -63,6 +63,7 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         <AuthContext.Provider value={{
             ...state,
             loginUser,
+            registerUser,
         }}>
             {children}
         </AuthContext.Provider>

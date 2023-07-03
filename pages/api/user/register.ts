@@ -56,7 +56,7 @@ const registerUser = async (req: NextApiRequest, res: NextApiResponse<Data>) => 
 
     if (user) {
         return res.status(400).json({
-            message: 'No puede usar ese correo'
+            message: 'El correo ya esta en uso.'
         })
     }
 

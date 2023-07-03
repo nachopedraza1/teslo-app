@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 
-import { tesloApi } from '@/api';
-import { validations } from '@/utils';
 import { useForm } from 'react-hook-form'
 
+import { validations } from '@/utils';
+import { AuthContext } from '@/context';
 
 import { Box, Button, Chip, Grid, TextField, Typography } from '@mui/material';
 import { ErrorOutline } from '@mui/icons-material';
@@ -20,23 +21,29 @@ type FormData = {
 
 const RegisterPage = () => {
 
+    const router = useRouter();
+
+    const { registerUser } = useContext(AuthContext);
+
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
 
     const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const onRegisterUser = async ({ name, email, password }: FormData) => {
 
         setShowError(false)
 
-        try {
-            const { data } = await tesloApi.post('/user/register', { name, email, password });
-            console.log(data);
-        } catch (error) {
-            console.log('error en las credenciales');
+        const { hasError, message } = await registerUser(name, email, password);
+
+        if (hasError) {
             setShowError(true);
+            setErrorMessage(message!)
             setTimeout(() => setShowError(false), 3000);
+            return;
         }
 
+        router.replace('/');
     }
 
     return (
@@ -47,7 +54,7 @@ const RegisterPage = () => {
                         <Grid item xs={12}>
                             <Typography variant='h1' component="h1">Crear cuenta</Typography>
                             <Chip
-                                label="Email o contraseña inválidos."
+                                label={errorMessage}
                                 color='error'
                                 icon={<ErrorOutline />}
                                 sx={{ display: showError ? 'flex' : 'none' }}
