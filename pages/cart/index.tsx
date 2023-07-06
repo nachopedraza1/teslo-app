@@ -1,8 +1,28 @@
+import { useContext, useEffect } from 'react';
+import { useRouter } from 'next/router';
+
+import { CartContext } from '@/context';
+
 import { Box, Button, Card, CardContent, Divider, Grid, Typography } from '@mui/material';
 import { ShopLayout } from '@/components/layouts/ShopLayout';
 import { CartList, OrderSummary } from '@/components/cart';
 
 const CartPage = () => {
+
+    const router = useRouter();
+
+    const { isLoaded, cart } = useContext(CartContext);
+
+    useEffect(() => {
+        if (isLoaded && cart.length === 0) {
+            router.replace('/cart/empty')
+        }
+    }, [isLoaded, cart])
+
+    if (!isLoaded || cart.length === 0) {
+        return (<></>);
+    }
+
 
     return (
         <ShopLayout title='Carrito - 3' pageDescription={'Carrito de compras de la tienda'}>
