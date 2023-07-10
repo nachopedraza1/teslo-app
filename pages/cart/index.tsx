@@ -6,6 +6,7 @@ import { CartContext } from '@/context';
 import { Box, Button, Card, CardContent, Divider, Grid, Typography } from '@mui/material';
 import { ShopLayout } from '@/components/layouts/ShopLayout';
 import { CartList, OrderSummary } from '@/components/cart';
+import NextLink from 'next/link';
 
 const CartPage = () => {
 
@@ -41,9 +42,11 @@ const CartPage = () => {
                             <OrderSummary />
 
                             <Box sx={{ mt: 3 }}>
-                                <Button color="secondary" className='circular-btn' fullWidth>
-                                    Checkout
-                                </Button>
+                                <NextLink href={'/checkout/summary'}>
+                                    <Button color="secondary" className='circular-btn' fullWidth>
+                                        Checkout
+                                    </Button>
+                                </NextLink>
                             </Box>
 
                         </CardContent>

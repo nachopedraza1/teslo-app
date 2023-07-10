@@ -1,12 +1,12 @@
 import { useContext, useState } from 'react';
+import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 
+import { getSession, signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 
-import { AuthContext } from '@/context';
 import { validations } from '@/utils';
-import { tesloApi } from '@/api';
 
 import { Box, Button, Chip, Grid, TextField, Typography } from '@mui/material';
 import { ErrorOutline } from '@mui/icons-material';
@@ -21,14 +21,12 @@ const LoginPage = () => {
 
     const router = useRouter();
 
-    const { loginUser } = useContext(AuthContext);
-
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
     const [showError, setShowError] = useState(false);
 
     const onLoginUser = async ({ email, password }: FormData) => {
         setShowError(false)
-        const isValidLogin = await loginUser(email, password);
+        /* const isValidLogin = await loginUser(email, password);
 
         if (!isValidLogin) {
             setShowError(true);
@@ -37,7 +35,8 @@ const LoginPage = () => {
         }
 
         const destination = router.query.p?.toString() || '/';
-        router.replace(destination)
+        router.replace(destination) */
+        await signIn('credentials', { email, password });
     }
 
     return (
@@ -102,5 +101,28 @@ const LoginPage = () => {
         </AuthLayout>
     )
 }
+
+export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
+
+    const session = await getSession({ req });
+    // console.log({session});
+
+    const { p = '/' } = query;
+
+    if (session) {
+        return {
+            redirect: {
+                destination: p.toString(),
+                permanent: false
+            }
+        }
+    }
+
+
+    return {
+        props: {}
+    }
+}
+
 
 export default LoginPage
