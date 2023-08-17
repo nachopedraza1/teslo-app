@@ -2,7 +2,9 @@ import { FC, ReactNode, useEffect, useReducer, useRef } from 'react';
 import { CartContext, cartReducer } from './';
 import { getAdressFromCookies } from '@/utils';
 import Cookie from 'js-cookie';
-import { ICartProduct } from '@/interfaces/cart';
+
+import { ICartProduct, IOrder, ShippingAdress } from '@/interfaces';
+import { tesloApi } from '@/api';
 
 export interface CartState {
     isLoaded: boolean;
@@ -13,18 +15,6 @@ export interface CartState {
     total: number;
     shippingAdress?: ShippingAdress;
 }
-
-export interface ShippingAdress {
-    firstName: string,
-    lastName: string,
-    address: string,
-    address2?: string,
-    zip: string,
-    city: string,
-    country: string,
-    phone: string,
-}
-
 
 const Cart_INITIAL_STATE: CartState = {
     isLoaded: false,
@@ -78,7 +68,7 @@ export const CartProvider: FC<{ children: ReactNode }> = ({ children }) => {
         Cookie.set('city', adress.city)
         Cookie.set('country', adress.country)
         Cookie.set('phone', adress.phone)
-        
+
         dispatch({ type: '[Cart] - Update Address', payload: adress })
     }
 
@@ -132,13 +122,34 @@ export const CartProvider: FC<{ children: ReactNode }> = ({ children }) => {
         dispatch({ type: '[Cart] - Remove product', payload: cartOnRemoveProduct })
     }
 
+    const createOrder = async () => {
+
+        if (!state.shippingAdress) {
+            throw new Error('No hay direccion de entrega.')
+        }
+
+        const body: IOrder = {
+            orderItems: state.cart.map(p => ({ ...p, size: p.size! })),
+            shippingAdress: state.shippingAdress,
+            numberOfItems: state.numberOfItems,
+            subTotal: state.subTotal,
+            iva: state.iva,
+            total: state.total,
+            isPaid: false,
+        }
+
+        const { data } = await tesloApi.post('/orders', body);
+        console.log(data);
+    }
+
     return (
         <CartContext.Provider value={{
             ...state,
             onAddProductToCart,
             onUpdateQuantityCart,
             removeCartProduct,
-            updateAdress
+            updateAdress,
+            createOrder
         }}>
             {children}
         </CartContext.Provider>

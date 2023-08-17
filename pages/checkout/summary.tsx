@@ -11,7 +11,12 @@ import { countries } from '@/utils';
 
 const SummaryPage = () => {
 
-    const { shippingAdress, numberOfItems } = useContext(CartContext);
+    const { shippingAdress, numberOfItems, createOrder } = useContext(CartContext);
+
+
+    const onCreateOrder = () => {
+        createOrder();
+    }
 
     if (!shippingAdress) {
         return <></>
@@ -58,7 +63,12 @@ const SummaryPage = () => {
                             <OrderSummary />
 
                             <Box sx={{ mt: 3 }}>
-                                <Button color="secondary" className='circular-btn' fullWidth>
+                                <Button
+                                    fullWidth
+                                    color="secondary"
+                                    className='circular-btn'
+                                    onClick={createOrder}
+                                >
                                     Confirmar Orden
                                 </Button>
                             </Box>
