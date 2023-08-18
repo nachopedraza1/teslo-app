@@ -10,11 +10,11 @@ const orderSchema = new Schema({
         size: { type: String, required: true },
         quantity: { type: Number, required: true },
         slug: { type: String, required: true },
-        image: { type: String, required: true },
+        images: { type: String, required: true },
         price: { type: Number, required: true },
         gender: { type: String, required: true },
     }],
-    shippingAddress: {
+    shippingAdress: {
         firstName: { type: String, required: true },
         lastName: { type: String, required: true },
         address: { type: String, required: true },
@@ -27,7 +27,7 @@ const orderSchema = new Schema({
 
     numberOfItems: { type: Number, required: true },
     subTotal: { type: Number, required: true },
-    tax: { type: Number, required: true },
+    iva: { type: Number, required: true },
     total: { type: Number, required: true },
 
     isPaid: { type: Boolean, required: true, default: false },
