@@ -1,4 +1,5 @@
 import { useContext, useEffect } from 'react';
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 
 import { CartContext } from '@/context';
@@ -6,7 +7,6 @@ import { CartContext } from '@/context';
 import { Box, Button, Card, CardContent, Divider, Grid, Typography } from '@mui/material';
 import { ShopLayout } from '@/components/layouts/ShopLayout';
 import { CartList, OrderSummary } from '@/components/cart';
-import NextLink from 'next/link';
 
 const CartPage = () => {
 

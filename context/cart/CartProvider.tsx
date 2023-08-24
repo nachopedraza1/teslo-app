@@ -2,6 +2,7 @@ import { FC, ReactNode, useEffect, useReducer, useRef } from 'react';
 import { CartContext, cartReducer } from './';
 import { getAdressFromCookies } from '@/utils';
 import Cookie from 'js-cookie';
+import axios from 'axios';
 
 import { ICartProduct, IOrder, ShippingAdress } from '@/interfaces';
 import { tesloApi } from '@/api';
@@ -122,7 +123,7 @@ export const CartProvider: FC<{ children: ReactNode }> = ({ children }) => {
         dispatch({ type: '[Cart] - Remove product', payload: cartOnRemoveProduct })
     }
 
-    const createOrder = async () => {
+    const createOrder = async (): Promise<{ hasError: boolean; message: string; }> => {
 
         if (!state.shippingAdress) {
             throw new Error('No hay direccion de entrega.')
@@ -138,8 +139,28 @@ export const CartProvider: FC<{ children: ReactNode }> = ({ children }) => {
             isPaid: false,
         }
 
-        const { data } = await tesloApi.post('/orders', body);
-        console.log(data);
+        try {
+
+            const { data } = await tesloApi.post<IOrder>('/orders', body);
+
+            dispatch({ type: '[Cart] - Complete Order' });
+
+            return {
+                hasError: false,
+                message: data._id!
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                return {
+                    hasError: true,
+                    message: error.response?.data.message
+                }
+            }
+            return {
+                hasError: true,
+                message: 'Error no controlado, hable con el administrador'
+            }
+        }
     }
 
     return (
