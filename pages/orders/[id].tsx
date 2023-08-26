@@ -94,6 +94,7 @@ const OrderPage: NextPage<Props> = ({ order }) => {
                             </Box>
 
                         </CardContent>
+                        
                     </Card>
                 </Grid>
             </Grid>
