@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { db } from '@/database';
 import { Order, Product } from '@/models';
-import { IOrder} from '@/interfaces';
+import { IOrder } from '@/interfaces';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../auth/[...nextauth]';
 
@@ -56,6 +56,7 @@ const createOrder = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
 
         const userId = session.user._id;
         const newOrder = new Order({ ...req.body, isPaid: false, user: userId });
+        newOrder.total = Math.round(newOrder.total * 100) / 100;
         await newOrder.save();
         await db.disconnect();
 

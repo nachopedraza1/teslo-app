@@ -1,12 +1,13 @@
-import NextLink from 'next/link';
 import { GetServerSideProps, NextPage } from 'next';
+import { getSession } from 'next-auth/react';
 
-import { Link, Box, Card, CardContent, Divider, Grid, Typography, Chip } from '@mui/material';
+import { Box, Card, CardContent, Divider, Grid, Typography, Chip } from '@mui/material';
 import { CreditCardOffOutlined, CreditScoreOutlined } from '@mui/icons-material';
 
+import { PayPalButtons } from "@paypal/react-paypal-js"
 import { ShopLayout } from '@/components/layouts/ShopLayout';
 import { CartList, OrderSummary } from '@/components/cart';
-import { getSession } from 'next-auth/react';
+
 import { dbOrders } from '@/database';
 import { IOrder } from '@/interfaces';
 
@@ -46,7 +47,7 @@ const OrderPage: NextPage<Props> = ({ order }) => {
                     )
             }
 
-            <Grid container>
+            <Grid container className='fadeIn'>
                 <Grid item xs={12} sm={7}>
                     <CartList products={order.orderItems} />
                 </Grid>
@@ -79,7 +80,24 @@ const OrderPage: NextPage<Props> = ({ order }) => {
                                 {
                                     !isPaid ?
                                         (
-                                            <h1>Pagar</h1>
+                                            <PayPalButtons
+                                                createOrder={(data, actions) => {
+                                                    return actions.order.create({
+                                                        purchase_units: [{
+                                                            amount: {
+                                                                value: "1.99"
+                                                            }
+                                                        }]
+                                                    })
+                                                }}
+                                                onApprove={(data, actions) => {
+                                                    return actions.order!.capture().then((details) => {
+                                                        console.log(details);
+
+                                                        const name = details.payer.name?.given_name;
+                                                        alert(`Transaction completed by ${name}`);
+                                                    })
+                                                }} />
                                         ) : (
                                             <Chip
                                                 sx={{ my: 2 }}
@@ -94,7 +112,7 @@ const OrderPage: NextPage<Props> = ({ order }) => {
                             </Box>
 
                         </CardContent>
-                        
+
                     </Card>
                 </Grid>
             </Grid>
