@@ -1,10 +1,12 @@
-import { db } from '@/database';
-import { PaypalOrderStatusResponse } from '@/interfaces/paypal';
-import { Order } from '@/models';
+import type { NextApiRequest, NextApiResponse } from 'next';
+
 import axios from 'axios';
 import { isValidObjectId } from 'mongoose';
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { getSession } from 'next-auth/react';
+
+import { db } from '@/database';
+import { Order } from '@/models';
+
+import { PaypalOrderStatusResponse } from '@/interfaces/paypal';
 
 type Data =
     { message: string }
@@ -62,7 +64,7 @@ const payOrder = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
      if (!session) {
          return res.status(400).json({ message: 'No hay session' })
      } */
-     
+
     const { orderId = '', transactionId = '' } = req.body;
 
     const paypayBarerToken = await getPaypalBarerToken();
