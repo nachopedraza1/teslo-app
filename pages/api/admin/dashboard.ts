@@ -1,18 +1,11 @@
-import { db, dbOrders } from '@/database';
-import { Order, Product, User } from '@/models';
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { Order, Product, User } from '@/models';
+import { db } from '@/database';
 
-interface Data {
-    numberOfOrders: number;
-    paidOrders: number; // isPad true
-    notPaidOrders: number;
-    numberOfClients: number; // role: client
-    numberOfProducts: number;
-    productsWithNoInventory: number; // 0
-    lowInventory: number; // productos con 10 o menos
-}
+import { DashboardData } from '@/interfaces';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse<DashboardData>) {
 
     await db.connect();
 
