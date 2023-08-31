@@ -16,10 +16,6 @@ const DashboardPage: NextPage = () => {
         refreshInterval: 30 * 1000
     });
 
-    if (!error && !data) {
-        return <> Cargando... </>
-    }
-
     const [refreshIn, setRefreshIn] = useState(30);
 
     useEffect(() => {
@@ -29,6 +25,12 @@ const DashboardPage: NextPage = () => {
 
         return () => clearInterval(interval)
     }, [])
+
+
+    if (!error && !data) {
+        return <> Cargando... </>
+    }
+
 
 
 
