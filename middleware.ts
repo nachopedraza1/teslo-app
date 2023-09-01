@@ -11,6 +11,7 @@ export async function middleware(req: NextRequest) {
     const validRoles = ['admin', 'super-user', 'SEO'];
 
     const url = req.nextUrl.clone();
+    
 
     if (!session) {
 
@@ -39,7 +40,6 @@ export async function middleware(req: NextRequest) {
 
     if (requestedPage.includes('/admin') && !validRoles.includes(session.user.role)) {
         url.pathname = '/'
-
         return NextResponse.redirect(url)
     }
 
@@ -48,5 +48,5 @@ export async function middleware(req: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-    matcher: ['/checkout/address', '/checkout/summary', '/api/admin/dashboard', '/admin']
+    matcher: ['/checkout/address', '/checkout/summary', '/api/admin/dashboard', '/api/admin/user']
 };
